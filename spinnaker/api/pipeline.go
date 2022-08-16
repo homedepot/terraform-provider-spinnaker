@@ -9,7 +9,7 @@ import (
 )
 
 func CreatePipeline(client *gate.GatewayClient, pipeline interface{}) error {
-	resp, err := client.PipelineControllerApi.SavePipelineUsingPOST(client.Context, pipeline)
+	resp, err := client.PipelineControllerApi.SavePipelineUsingPOST(client.Context, pipeline, nil)
 
 	if err != nil {
 		return err
