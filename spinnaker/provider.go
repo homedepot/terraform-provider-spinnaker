@@ -1,9 +1,12 @@
 package spinnaker
 
 import (
+   "os"
+   "io/ioutil"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-	"github.com/spf13/pflag"
+   "github.com/spinnaker/spin/cmd/output"
 	gate "github.com/spinnaker/spin/cmd/gateclient"
 )
 
@@ -22,6 +25,12 @@ func Provider() terraform.ResourceProvider {
 				Description: "Path to Gate config file",
 				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CONFIG_PATH", nil),
 			},
+         "https_proxy": {
+            Type:        schema.TypeString,
+            Optional:    true,
+            Description: "HTTPS proxy",
+            Default: "",
+         },
 			"ignore_cert_errors": {
 				Type:        schema.TypeBool,
 				Optional:    true,
@@ -56,19 +65,23 @@ type gateConfig struct {
 func providerConfigureFunc(data *schema.ResourceData) (interface{}, error) {
 	server := data.Get("server").(string)
 	config := data.Get("config").(string)
+   httpsProxy := data.Get("https_proxy").(string)
 	ignoreCertErrors := data.Get("ignore_cert_errors").(bool)
 	defaultHeaders := data.Get("default_headers").(string)
 
-	flags := pflag.NewFlagSet("default", 1)
-	flags.String("gate-endpoint", server, "")
-	flags.Bool("quiet", false, "")
-	flags.Bool("insecure", ignoreCertErrors, "")
-	flags.Bool("no-color", true, "")
-	flags.String("output", "", "")
-	flags.String("config", config, "")
-	flags.String("default-headers", defaultHeaders, "")
-	// flags.Parse()
-	client, err := gate.NewGateClient(flags)
+   if httpsProxy != "" {
+      os.Setenv("HTTPS_PROXY", httpsProxy)
+   }
+
+   quiet := false
+   noColor := true
+   outputFormater, err := output.ParseOutputFormat("")
+   if err != nil {
+      return nil, err
+   }
+   ui := output.NewUI(quiet, noColor, outputFormater, ioutil.Discard, ioutil.Discard)
+
+   client, err := gate.NewGateClient(ui, server, defaultHeaders, config, ignoreCertErrors)
 	if err != nil {
 		return nil, err
 	}
