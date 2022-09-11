@@ -25,6 +25,12 @@ func Provider() terraform.ResourceProvider {
 				Description: "Path to Gate config file",
 				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CONFIG_PATH", nil),
 			},
+         "upsert_strategy": {
+            Type:        schema.TypeBool,
+            Optional:    true,
+            Description: "When creating pipelines, update pipeline if it already exists.",
+            Default:     true,
+         },
          "https_proxy": {
             Type:        schema.TypeString,
             Optional:    true,
@@ -60,11 +66,13 @@ func Provider() terraform.ResourceProvider {
 type gateConfig struct {
 	server string
 	client *gate.GatewayClient
+   upSertStrategy bool
 }
 
 func providerConfigureFunc(data *schema.ResourceData) (interface{}, error) {
 	server := data.Get("server").(string)
 	config := data.Get("config").(string)
+   upSertStrategy := data.Get("upsert_strategy").(bool)
    httpsProxy := data.Get("https_proxy").(string)
 	ignoreCertErrors := data.Get("ignore_cert_errors").(bool)
 	defaultHeaders := data.Get("default_headers").(string)
@@ -88,5 +96,6 @@ func providerConfigureFunc(data *schema.ResourceData) (interface{}, error) {
 	return gateConfig{
 		server: data.Get("server").(string),
 		client: client,
+      upSertStrategy: upSertStrategy,
 	}, nil
 }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/tidal-engineering/terraform-provider-spinnaker/spinnaker/api"
+	"github.com/guido9j/terraform-provider-spinnaker/spinnaker/api"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -53,6 +53,18 @@ func resourcePipelineCreate(data *schema.ResourceData, meta interface{}) error {
 	applicationName := data.Get("application").(string)
 	pipelineName := data.Get("name").(string)
 	pipeline := data.Get("pipeline").(string)
+
+   if clientConfig.upSertStrategy == true {
+      var p pipelineRead
+      jsonMap, err := api.GetPipeline(client, applicationName, pipelineName, &p)
+      //return fmt.Errorf("jsonMap: %v, err: %s", jsonMap, err)
+      if err == nil {
+         err = data.Set("pipeline_id", jsonMap["id"])
+         if err == nil {
+            return resourcePipelineUpdate (data, meta);
+         }
+      }
+   }
 
 	var tmp map[string]interface{}
 	if err := json.NewDecoder(strings.NewReader(pipeline)).Decode(&tmp); err != nil {
