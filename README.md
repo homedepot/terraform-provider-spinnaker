@@ -13,12 +13,12 @@ https://spinnaker.io/concepts/
 ## Requirements
 
 - [Terraform](https://www.terraform.io/downloads.html) 0.10.x
-- [Go](https://golang.org/doc/install) 1.11 (to build the provider plugin)
+- [Go](https://golang.org/doc/install) 1.14 (to build the provider plugin)
 
 ## Building and Developing The Provider
 
 ```sh
-$ git clone git@github.com:tidal-engineering/terraform-provider-spinnaker.git
+$ git clone git@github.com:guido9j/terraform-provider-spinnaker.git
 $ cd terraform-provider-spinnaker/
 $ go build
 $ go test./...
