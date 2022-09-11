@@ -20,6 +20,7 @@ builds:
       - darwin
     goarch:
       - amd64
+      # - arm64 # TO-DO: needs higher version of golang
     ignore:
       - goos: darwin
         goarch: "386"

@@ -1,4 +1,4 @@
-name: goreleaser
+name: goreleaser-snapshot
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  goreleaser:
+  goreleaser-snapshot:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,9 +17,9 @@ jobs:
       - name: Unshallow
         run: git fetch --prune --unshallow
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
-          go-version: 1.14
+          go-version-file: 'go.mod'
       - name: Test
         run: go test ./...
       - name: Import GPG key

@@ -31,6 +31,7 @@ The following arguments are supported. Defaults to Env variables if not specifie
 
 - `server`: (Required) URL for Gate (Default: Env `GATE_URL`)
 - `config`: (Optional) Path to Gate config file. See the [Spin CLI](https://github.com/spinnaker/spin/blob/master/config/example.yaml) for an example config. (Default: Env `SPINNAKER_CONFIG_PATH`)
+- `upsert_strategy`: (Optional) When creating pipelines, update pipeline if it already exists. (Default: `true`)
 - `ignore_cert_errors`: (Optional) Ignore certificate errors from Gate (Default: `false`)
 - `https_proxy`: (Optional) HTTPS proxy to connect to Gate (Default: `""`)
 - `default_headers`: (Optional) A comma separated set of key value pairs to set default headers for the gate client when sending requests to your gate endpoint e.g. "header1=value1,header2=value2". (Default: `""`)
