@@ -18,7 +18,7 @@ https://spinnaker.io/concepts/
 ## Building and Developing The Provider
 
 ```sh
-$ git clone git@github.com:guido9j/terraform-provider-spinnaker.git
+$ git clone git@github.com:homedepot/terraform-provider-spinnaker.git
 $ cd terraform-provider-spinnaker/
 $ go build
 $ go test./...
