@@ -1,4 +1,4 @@
-module github.com/guido9j/terraform-provider-spinnaker
+module github.com/homedepot/terraform-provider-spinnaker
 
 go 1.14
 
