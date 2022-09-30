@@ -6,13 +6,22 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 	gate "github.com/spinnaker/spin/cmd/gateclient"
+	gate_swagger "github.com/spinnaker/spin/gateapi"
 )
+
+func FormatAPIErrorMessage(function_name string, err error) error {
+      switch err_sw := err.(type) {
+      case gate_swagger.GenericSwaggerError:
+         return fmt.Errorf("%s: %s() response payload: %s", err_sw.Error(), function_name, err_sw.Body())
+      }
+      return fmt.Errorf("%s: From %s()", err, function_name)
+}
 
 func CreatePipeline(client *gate.GatewayClient, pipeline interface{}) error {
 	resp, err := client.PipelineControllerApi.SavePipelineUsingPOST(client.Context, pipeline, nil)
 
 	if err != nil {
-		return err
+      return FormatAPIErrorMessage ("PipelineControllerApi.SavePipelineUsingPOST", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -33,7 +42,7 @@ func GetPipeline(client *gate.GatewayClient, applicationName, pipelineName strin
 		}
 		return jsonMap, fmt.Errorf("Encountered an error getting pipeline %s, %s\n",
 			pipelineName,
-			err.Error())
+         FormatAPIErrorMessage ("PipelineControllerApi.GetPipelineConfigUsingGET", err))
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -58,7 +67,7 @@ func UpdatePipeline(client *gate.GatewayClient, pipelineID string, pipeline inte
 	_, resp, err := client.PipelineControllerApi.UpdatePipelineUsingPUT(client.Context, pipelineID, pipeline)
 
 	if err != nil {
-		return err
+      return FormatAPIErrorMessage ("PipelineControllerApi.UpdatePipelineUsingPUT", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -72,7 +81,7 @@ func DeletePipeline(client *gate.GatewayClient, applicationName, pipelineName st
 	resp, err := client.PipelineControllerApi.DeletePipelineUsingDELETE(client.Context, applicationName, pipelineName)
 
 	if err != nil {
-		return err
+      return FormatAPIErrorMessage ("PipelineControllerApi.DeletePipelineUsingDELETE", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
