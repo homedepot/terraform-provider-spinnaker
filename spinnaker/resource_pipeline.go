@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+   "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
 	"github.com/guido9j/terraform-provider-spinnaker/spinnaker/api"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourcePipeline() *schema.Resource {
