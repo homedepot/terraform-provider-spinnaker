@@ -18,10 +18,10 @@ builds:
     goos:
       - linux
       - darwin
+      - windows
     goarch:
       - amd64
-      - arm64 # TO-DO: needs higher version of golang
-      - windows
+      - arm64 # TO-DO: needs higher version of golang      
     ignore:
       - goos: darwin
         goarch: "386"
