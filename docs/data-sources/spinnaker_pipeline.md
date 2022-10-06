@@ -13,9 +13,9 @@ provider "spinnaker" {
     server = "http://spinnaker-gate.myorg.io"
 }
 
-data "spinnaker_application" "terraform_example" {
+data "spinnaker_pipeline" "pipeline_example" {
     application = "terraformexample"
-    email       = "user@example.com"
+    name        = "Example Pipeline"
 }
 ```
 

@@ -1,6 +1,7 @@
 package spinnaker
 
 import (
+   "encoding/json"
 	"fmt"
 	"regexp"
 )
@@ -12,3 +13,12 @@ func validateApplicationName(v interface{}, k string) (ws []string, errors []err
 	}
 	return
 }
+
+func validatePipelineJson(v interface{}, k string) (ws []string, errors []error) {
+	value := v.(string)
+   if !json.Valid([]byte(value)) {
+      errors = append(errors, fmt.Errorf("Not valid JSON"))
+   }
+	return
+}
+
