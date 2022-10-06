@@ -1,6 +1,6 @@
 # Terraform Provider
 
-- Website: https://www.terraform.io
+- Provider Publishing: https://registry.terraform.io/providers/homedepot/spinnaker/latest/docs
 - [![Gitter chat](https://badges.gitter.im/hashicorp-terraform/Lobby.png)](https://gitter.im/hashicorp-terraform/Lobby)
 - Mailing list: [Google Groups](http://groups.google.com/group/terraform-tool)
 
