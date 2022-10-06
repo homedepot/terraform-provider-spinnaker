@@ -21,7 +21,7 @@ data "spinnaker_pipeline_add_lock" "example_pipeline" {
 ## Argument Reference
 
 - `pipeline` - (Required) Pipeline json.
-- `ui` - (Optional) Unknown behavior. (Default: `true`)
+- `ui` - (Optional) Unknown behavior or ignored by Spinnaker. (Default: `true`)
 - `allow_unlock_ui` - (Optional) If set to true means pipelibe can be unlocked from inside the Spinnaker UI (deck). If set to false, then all changes to the pipeline must be done thru API. (Default: `true`)
 - `description` - (Optional) Reason shown in Spinnaker UI (deck) for pipeline to be locked (Default: No default unless environment variables are set, then `"Maintained in $GITHUB_SERVER_URL/$GITHUB_REPOSITORY"` or `"Maintained in repo: $GITHUB_REPOSITORY"`).
 

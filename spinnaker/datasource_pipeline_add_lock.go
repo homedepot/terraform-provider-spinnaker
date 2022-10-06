@@ -22,7 +22,7 @@ func datasourcePipelineAddLock() *schema.Resource {
 				Type:         schema.TypeBool,
 				Optional:     true,
             Default:      true,
-            Description:  "Unknown behavior.",
+            Description:  "Unknown behavior or ignored by Spinnaker.",
 			},
 			"allow_unlock_ui": {
 				Type:         schema.TypeBool,
