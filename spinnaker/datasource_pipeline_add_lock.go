@@ -22,19 +22,19 @@ func datasourcePipelineAddLock() *schema.Resource {
 				Type:         schema.TypeBool,
 				Optional:     true,
             Default:      true,
-            Description:  "If set to true pipeline shows locked in UI (deck).",
+            Description:  "Unknown behavior.",
 			},
 			"allow_unlock_ui": {
 				Type:         schema.TypeBool,
 				Optional:     true,
             Default:      true,
-            Description:  "If set to true means pipelibe can be unlocked from inside the UI (deck). If set to false, then all changes to the pipeline must be done thru API.",
+            Description:  "If set to true means pipelibe can be unlocked from inside the Spinnaker UI (deck). If set to false, then all changes to the pipeline must be done thru API.",
 			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
             DefaultFunc:  getLockedDescription,
-            Description:  "Reason shown in UI (deck) for pipeline to be locked.",
+            Description:  "Reason shown in Spinnaker UI (deck) for pipeline to be locked.",
 			},
 			"rendered": {
 				Type:         schema.TypeString,
