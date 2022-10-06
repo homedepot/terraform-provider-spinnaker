@@ -58,6 +58,7 @@ func Provider() *schema.Provider {
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"spinnaker_pipeline": datasourcePipeline(),
+         "spinnaker_pipeline_add_lock": datasourcePipelineAddLock(),
 		},
 		ConfigureFunc: providerConfigureFunc,
 	}

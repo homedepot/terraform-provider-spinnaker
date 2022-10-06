@@ -18,7 +18,7 @@ resource "spinnaker_application" "terraform_example" {
     email       = "user@example.com"
 }
 
-resource "spinnaker_pipeline" "terraform_example" {
+resource "spinnaker_pipeline" "pipeline_example" {
     application = spinnaker_application.terraform_example.application
     name        = "Example Pipeline"
     pipeline    = file("pipelines/example.json")
