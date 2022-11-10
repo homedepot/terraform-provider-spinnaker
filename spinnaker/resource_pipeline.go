@@ -213,6 +213,7 @@ func editAndEncodePipeline(pipelineMap map[string]interface{}) (encodedPipeline 
 	delete(pipelineMap, "index")
 	delete(pipelineMap, "name")
 	delete(pipelineMap, "updateTs")
+	delete(pipelineMap, "schema")
 
 	// Encode the pipeline into a single string
 	// This will sort all keys, etc.
