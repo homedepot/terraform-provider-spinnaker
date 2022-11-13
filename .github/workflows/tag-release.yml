@@ -1,0 +1,17 @@
+name: tag-release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  tag-release:
+    if: ${{ GITHUB_REF_NAME == 'master' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: tag
+        shell: bash
+          run: |
+            ACCEPT="Accept: application/vnd.github.v3+json"
+            AUTH="Authorization: token ${{ secrets.GITHUB_TOKEN }}"
+            REPO_URL="https://api.github.com/repos/$GITHUB_REPOSITORY"
+            curl -H "{$ACCEPT}" -H "${AUTH}" ${REPO_URL}/releases/latest | jq -r '.tag_name'
