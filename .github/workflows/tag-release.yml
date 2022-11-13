@@ -5,7 +5,7 @@ on:
 
 jobs:
   tag-release:
-    if: ${{ GITHUB_REF_NAME == 'master' }}
+    if: ${{ env.GITHUB_REF_NAME == 'master' }}
     runs-on: ubuntu-latest
     steps:
       - name: tag
