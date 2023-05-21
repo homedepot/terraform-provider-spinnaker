@@ -21,7 +21,7 @@ https://spinnaker.io/concepts/
 $ git clone git@github.com:homedepot/terraform-provider-spinnaker.git
 $ cd terraform-provider-spinnaker/
 $ go build
-$ go test./...
+$ go test ./...
 ```
 
 ## Using the provider
