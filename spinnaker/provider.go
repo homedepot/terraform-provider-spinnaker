@@ -1,12 +1,12 @@
 package spinnaker
 
 import (
-   "os"
-   "io/ioutil"
+	"os"
+	"io/ioutil"
 
-   "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-   "github.com/spinnaker/spin/cmd/output"
+	"github.com/spinnaker/spin/cmd/output"
 	gate "github.com/spinnaker/spin/cmd/gateclient"
 )
 
