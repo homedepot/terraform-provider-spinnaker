@@ -56,27 +56,19 @@ func CreateOrUpdateApplication(client *gate.GatewayClient, applicationName, emai
 		"description":                    applicationDescription,
 	}
 
-var s = fmt.Errorf("len=%d ", len(cloud_providers))
         if len(cloud_providers) > 0 {
 		providers_csv := ""
 		for i := range cloud_providers {
-s = fmt.Errorf("%s %i:%s", s, i, cloud_providers[i].(string))
 			if (i > 0) { providers_csv += "," }
 			providers_csv += cloud_providers[i].(string)
 		}
 		app["cloudProviders"] = providers_csv
-s = fmt.Errorf("%s %s", s, providers_csv)
 	}
-//return s
 
         if permissions.Len() == 1 {
-var s = fmt.Errorf("len=%d ", permissions.Len())
 		permissions_object := make(map[string]interface {})
 		list := permissions.List()
-s = fmt.Errorf("%s %T:%s", s, list, list)
-s = fmt.Errorf("%s %T:%s", s, list[0], list[0])
 		for k, value := range list[0].(map[string]interface {}) {
-s = fmt.Errorf("%s %s=>%T:%s", s, k, value, value)
 			switch key := k; key {
 				case "read":
 					permissions_object["READ"] = value
@@ -89,10 +81,6 @@ s = fmt.Errorf("%s %s=>%T:%s", s, k, value, value)
 			}
 		}
 		app["permissions"] = permissions_object
-		//for i := range list {
-//s = fmt.Errorf("%s %T:%s", s, list[i], list[i])
-		//}
-//return s
 	}
 
 	createAppTask := map[string]interface{}{
