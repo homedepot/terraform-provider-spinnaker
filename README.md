@@ -1,6 +1,6 @@
 # Terraform Provider
 
-- Website: https://www.terraform.io
+- Provider Publishing: https://registry.terraform.io/providers/homedepot/spinnaker/latest/docs
 - [![Gitter chat](https://badges.gitter.im/hashicorp-terraform/Lobby.png)](https://gitter.im/hashicorp-terraform/Lobby)
 - Mailing list: [Google Groups](http://groups.google.com/group/terraform-tool)
 
@@ -18,7 +18,7 @@ https://spinnaker.io/concepts/
 ## Building and Developing The Provider
 
 ```sh
-$ git clone git@github.com:guido9j/terraform-provider-spinnaker.git
+$ git clone git@github.com:homedepot/terraform-provider-spinnaker.git
 $ cd terraform-provider-spinnaker/
 $ go build
 $ go test ./...

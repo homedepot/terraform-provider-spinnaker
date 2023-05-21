@@ -1,0 +1,70 @@
+name: tag-release
+
+concurrency: tag-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      type:
+        description: 'Tag type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+        - major
+        - minor
+        - patch
+    
+jobs:
+  tag-release:
+    if: ${{ github.ref_name == 'master' }}
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: checkout
+        uses: actions/checkout@v3
+        with: 
+          ssh-key: "${{ secrets.TAG_COMMIT_KEY }}"
+        
+      - name: tag
+        shell: bash
+        run: |
+          ACCEPT="Accept: application/vnd.github.v3+json"
+          AUTH="Authorization: token ${{ secrets.GITHUB_TOKEN }}"
+          REPO_URL="https://api.github.com/repos/$GITHUB_REPOSITORY"
+          
+          TAG=$( curl -H "${ACCEPT}" -H "${AUTH}" ${REPO_URL}/git/matching-refs/tags  |
+                 jq -r '.[].ref' | 
+                 sed 's/^refs\/tags\///' |
+                 sort -V | 
+                 awk -v "type=${{ inputs.type }}" '
+          /^v[0-9]+\.[0-9]+\.[0-9]+$/ { version=$0 }
+          END {
+            split (substr(version, 2), v, ".")
+            major=v[1]
+            minor=v[2]
+            patch=v[3]
+            if (type == "major") {
+              major++
+              minor = 0
+              patch = 0
+            } else if (type == "minor") {
+              minor++
+              patch = 0
+            } else {
+              patch++
+            }
+            print "v" major "." minor "." patch
+          }' )
+          
+          if [ "${TAG}" = "v..1" ]
+          then
+            echo "FAILED to generate new tag version"
+            exit 1
+          fi
+          
+          echo "Creating ${{ inputs.type }} tag: ${TAG}"
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git tag ${TAG}
+          git push origin ${TAG}
