@@ -1,0 +1,39 @@
+{
+    "job": [
+        {
+            "type": "updateApplication",
+            "application": {
+                "name": "james",
+                "email": "james_guido@homedepot.com",
+                "updateTs": "1665712248658",
+                "createTs": "1645815515256",
+                "lastModifiedBy": "jeg02",
+                "cloudProviders": "kubernetes",
+                "trafficGuards": [],
+                "instancePort": 80,
+                "permissions": {
+                    "READ": [
+                        "gg_spinnaker_admins"
+                    ],
+                    "WRITE": [
+                        "gg_spinnaker_admins"
+                    ],
+                    "EXECUTE": [
+                        "gg_spinnaker_admins"
+                    ]
+                },
+                "user": "jeg02",
+                "dataSources": {
+                    "disabled": [],
+                    "enabled": []
+                },
+                "description": "description",
+                "aliases": "alias",
+                "repoType": null
+            },
+            "user": "jeg02"
+        }
+    ],
+    "application": "james",
+    "description": "Update Application: james"
+}

@@ -3,7 +3,7 @@ package spinnaker
 import (
 	"strings"
 
-   "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/guido9j/terraform-provider-spinnaker/spinnaker/api"
 )
@@ -35,10 +35,46 @@ func resourceApplication() *schema.Resource {
 				Optional: true,
 				Default:  "",
 			},
+			"cloud_providers": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"permissions": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"read": {
+							Type:	schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"execute": {
+							Type:	schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"write": {
+							Type:	schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			},
 		},
-		Create: resourceApplicationCreate,
+		Create: resourceApplicationCreateOrUpdate,
 		Read:   resourceApplicationRead,
-		Update: resourceApplicationUpdate,
+		Update: resourceApplicationCreateOrUpdate,
 		Delete: resourceApplicationDelete,
 		Exists: resourceApplicationExists,
 	}
@@ -51,7 +87,7 @@ type applicationRead struct {
 	} `json:"attributes"`
 }
 
-func resourceApplicationCreate(data *schema.ResourceData, meta interface{}) error {
+func resourceApplicationCreateOrUpdate(data *schema.ResourceData, meta interface{}) error {
 	clientConfig := meta.(gateConfig)
 	client := clientConfig.client
 	application := data.Get("application").(string)
@@ -59,8 +95,10 @@ func resourceApplicationCreate(data *schema.ResourceData, meta interface{}) erro
 	description := data.Get("description").(string)
 	platform_health_only := data.Get("platform_health_only").(bool)
 	platform_health_only_show_override := data.Get("platform_health_only_show_override").(bool)
+	cloud_providers := data.Get("cloud_providers").([]interface {})
+	permissions := data.Get("permissions").(interface {})
 
-	if err := api.CreateApplication(client, application, email, description, platform_health_only, platform_health_only_show_override); err != nil {
+	if err := api.CreateOrUpdateApplication(client, application, email, description, platform_health_only, platform_health_only_show_override, cloud_providers, permissions.(*schema.Set)); err != nil {
 		return err
 	}
 
@@ -77,10 +115,6 @@ func resourceApplicationRead(data *schema.ResourceData, meta interface{}) error 
 	}
 
 	return readApplication(data, app)
-}
-
-func resourceApplicationUpdate(data *schema.ResourceData, meta interface{}) error {
-	return nil
 }
 
 func resourceApplicationDelete(data *schema.ResourceData, meta interface{}) error {
