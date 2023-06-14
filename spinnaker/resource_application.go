@@ -95,10 +95,10 @@ func resourceApplicationCreateOrUpdate(data *schema.ResourceData, meta interface
 	description := data.Get("description").(string)
 	platform_health_only := data.Get("platform_health_only").(bool)
 	platform_health_only_show_override := data.Get("platform_health_only_show_override").(bool)
-	cloud_providers := data.Get("cloud_providers").([]interface {})
-	permissions := data.Get("permissions").(interface {})
+	cloud_providers := data.Get("cloud_providers").([]interface{})
+	permissions := data.Get("permissions").(*schema.Set)
 
-	if err := api.CreateOrUpdateApplication(client, application, email, description, platform_health_only, platform_health_only_show_override, cloud_providers, permissions.(*schema.Set)); err != nil {
+	if err := api.CreateOrUpdateApplication(client, application, email, description, platform_health_only, platform_health_only_show_override, cloud_providers, permissions); err != nil {
 		return err
 	}
 

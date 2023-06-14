@@ -66,9 +66,9 @@ func CreateOrUpdateApplication(client *gate.GatewayClient, applicationName, emai
 	}
 
         if permissions.Len() == 1 {
-		permissions_object := make(map[string]interface {})
+		permissions_object := make(map[string]interface{})
 		list := permissions.List()
-		for k, value := range list[0].(map[string]interface {}) {
+		for k, value := range list[0].(map[string]interface{}) {
 			switch key := k; key {
 				case "read":
 					permissions_object["READ"] = value
