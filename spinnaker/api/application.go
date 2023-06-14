@@ -6,10 +6,12 @@ import (
 	"strings"
 	"time"
 
-   "github.com/antihax/optional"
+	"github.com/antihax/optional"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/mitchellh/mapstructure"
+
 	gate "github.com/spinnaker/spin/cmd/gateclient"
-   gateapi "github.com/spinnaker/spin/gateapi"
+	gateapi "github.com/spinnaker/spin/gateapi"
 )
 
 func GetApplication(client *gate.GatewayClient, applicationName string, dest interface{}) error {
@@ -23,7 +25,7 @@ func GetApplication(client *gate.GatewayClient, applicationName string, dest int
 	}
 
 	if err != nil {
-		return err
+		return FormatAPIErrorMessage ("ApplicationControllerApi.GetApplicationUsingGET", err)
 	}
 
 	if err := mapstructure.Decode(app, dest); err != nil {
@@ -33,10 +35,19 @@ func GetApplication(client *gate.GatewayClient, applicationName string, dest int
 	return nil
 }
 
-func CreateApplication(client *gate.GatewayClient, applicationName, email,
-	applicationDescription string, platformHealthOnly, platformHealthOnlyShowOverride bool) error {
+func CreateOrUpdateApplication(client *gate.GatewayClient, applicationName, email,
+	applicationDescription string, platformHealthOnly, platformHealthOnlyShowOverride bool,
+        cloud_providers []interface{}, permissions *schema.Set) error {
 
-	app := map[string]interface{}{
+	jobType := "createApplication"
+	jobDescription := fmt.Sprintf("Create Application: %s", applicationName)
+   	app, resp, err := client.ApplicationControllerApi.GetApplicationUsingGET(client.Context, applicationName, &gateapi.ApplicationControllerApiGetApplicationUsingGETOpts{Expand: optional.NewBool(false)})
+	if resp != nil && resp.StatusCode == http.StatusOK && err == nil {
+		jobType = "updateApplication"
+		jobDescription = fmt.Sprintf("Update Application: %s", applicationName)
+	}
+	
+	app = map[string]interface{}{
 		"instancePort":                   80,
 		"name":                           applicationName,
 		"email":                          email,
@@ -45,15 +56,42 @@ func CreateApplication(client *gate.GatewayClient, applicationName, email,
 		"description":                    applicationDescription,
 	}
 
+        if len(cloud_providers) > 0 {
+		providers_csv := ""
+		for i := range cloud_providers {
+			if (i > 0) { providers_csv += "," }
+			providers_csv += cloud_providers[i].(string)
+		}
+		app["cloudProviders"] = providers_csv
+	}
+
+        if permissions.Len() == 1 {
+		permissions_object := make(map[string]interface{})
+		list := permissions.List()
+		for k, value := range list[0].(map[string]interface{}) {
+			switch key := k; key {
+				case "read":
+					permissions_object["READ"] = value
+				case "execute":
+					permissions_object["EXECUTE"] = value
+				case "write":
+					permissions_object["WRITE"] = value
+				default:
+					return fmt.Errorf("invalid permissions type of %s", key)
+			}
+		}
+		app["permissions"] = permissions_object
+	}
+
 	createAppTask := map[string]interface{}{
-		"job":         []interface{}{map[string]interface{}{"type": "createApplication", "application": app}},
+		"job":         []interface{}{map[string]interface{}{"type": jobType, "application": app}},
 		"application": applicationName,
-		"description": fmt.Sprintf("Create Application: %s", applicationName),
+		"description": jobDescription,
 	}
 
 	ref, _, err := client.TaskControllerApi.TaskUsingPOST1(client.Context, createAppTask)
 	if err != nil {
-		return err
+		return FormatAPIErrorMessage ("TaskControllerApi.TaskUsingPOST1", err)
 	}
 
 	toks := strings.Split(ref["ref"].(string), "/")
@@ -71,7 +109,7 @@ func CreateApplication(client *gate.GatewayClient, applicationName, email,
 	}
 
 	if err != nil {
-		return err
+		return FormatAPIErrorMessage ("TaskControllerApi.GetTaskUsingGET1", err)
 	}
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return fmt.Errorf("Encountered an error saving application, status code: %d\n", resp.StatusCode)
@@ -100,7 +138,7 @@ func DeleteAppliation(client *gate.GatewayClient, applicationName string) error 
 	_, resp, err := client.TaskControllerApi.TaskUsingPOST1(client.Context, deleteAppTask)
 
 	if err != nil {
-		return err
+		return FormatAPIErrorMessage ("TaskControllerApi.TaskUsingPOST1", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

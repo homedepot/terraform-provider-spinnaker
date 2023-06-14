@@ -1,12 +1,12 @@
 package spinnaker
 
 import (
-   "os"
-   "io/ioutil"
+	"os"
+	"io"
 
-   "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-   "github.com/spinnaker/spin/cmd/output"
+	"github.com/spinnaker/spin/cmd/output"
 	gate "github.com/spinnaker/spin/cmd/gateclient"
 )
 
@@ -88,7 +88,7 @@ func providerConfigureFunc(data *schema.ResourceData) (interface{}, error) {
    if err != nil {
       return nil, err
    }
-   ui := output.NewUI(quiet, noColor, outputFormater, ioutil.Discard, ioutil.Discard)
+   ui := output.NewUI(quiet, noColor, outputFormater, io.Discard, io.Discard)
 
    client, err := gate.NewGateClient(ui, server, defaultHeaders, config, ignoreCertErrors)
 	if err != nil {
