@@ -2,10 +2,6 @@ package api
 
 import (
 	"fmt"
-	//"net/http"
-
-	//"github.com/mitchellh/mapstructure"
-	//gate "github.com/spinnaker/spin/cmd/gateclient"
 	gate_swagger "github.com/spinnaker/spin/gateapi"
 )
 
