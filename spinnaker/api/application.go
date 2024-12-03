@@ -15,7 +15,7 @@ import (
 )
 
 func GetApplication(client *gate.GatewayClient, applicationName string, dest interface{}) error {
-   app, resp, err := client.ApplicationControllerApi.GetApplicationUsingGET(client.Context, applicationName, &gateapi.ApplicationControllerApiGetApplicationUsingGETOpts{Expand: optional.NewBool(false)})
+	app, resp, err := client.ApplicationControllerApi.GetApplicationUsingGET(client.Context, applicationName, &gateapi.ApplicationControllerApiGetApplicationUsingGETOpts{Expand: optional.NewBool(false)})
 	if resp != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
 			return fmt.Errorf("Application '%s' not found\n", applicationName)
@@ -25,7 +25,7 @@ func GetApplication(client *gate.GatewayClient, applicationName string, dest int
 	}
 
 	if err != nil {
-		return FormatAPIErrorMessage ("ApplicationControllerApi.GetApplicationUsingGET", err)
+		return FormatAPIErrorMessage("ApplicationControllerApi.GetApplicationUsingGET", err)
 	}
 
 	if err := mapstructure.Decode(app, dest); err != nil {
@@ -37,16 +37,16 @@ func GetApplication(client *gate.GatewayClient, applicationName string, dest int
 
 func CreateOrUpdateApplication(client *gate.GatewayClient, applicationName, email,
 	applicationDescription string, platformHealthOnly, platformHealthOnlyShowOverride bool,
-        cloud_providers []interface{}, permissions *schema.Set) error {
+	cloud_providers []interface{}, permissions *schema.Set) error {
 
 	jobType := "createApplication"
 	jobDescription := fmt.Sprintf("Create Application: %s", applicationName)
-   	app, resp, err := client.ApplicationControllerApi.GetApplicationUsingGET(client.Context, applicationName, &gateapi.ApplicationControllerApiGetApplicationUsingGETOpts{Expand: optional.NewBool(false)})
+	app, resp, err := client.ApplicationControllerApi.GetApplicationUsingGET(client.Context, applicationName, &gateapi.ApplicationControllerApiGetApplicationUsingGETOpts{Expand: optional.NewBool(false)})
 	if resp != nil && resp.StatusCode == http.StatusOK && err == nil {
 		jobType = "updateApplication"
 		jobDescription = fmt.Sprintf("Update Application: %s", applicationName)
 	}
-	
+
 	app = map[string]interface{}{
 		"instancePort":                   80,
 		"name":                           applicationName,
@@ -56,28 +56,30 @@ func CreateOrUpdateApplication(client *gate.GatewayClient, applicationName, emai
 		"description":                    applicationDescription,
 	}
 
-        if len(cloud_providers) > 0 {
+	if len(cloud_providers) > 0 {
 		providers_csv := ""
 		for i := range cloud_providers {
-			if (i > 0) { providers_csv += "," }
+			if i > 0 {
+				providers_csv += ","
+			}
 			providers_csv += cloud_providers[i].(string)
 		}
 		app["cloudProviders"] = providers_csv
 	}
 
-        if permissions.Len() == 1 {
+	if permissions.Len() == 1 {
 		permissions_object := make(map[string]interface{})
 		list := permissions.List()
 		for k, value := range list[0].(map[string]interface{}) {
 			switch key := k; key {
-				case "read":
-					permissions_object["READ"] = value
-				case "execute":
-					permissions_object["EXECUTE"] = value
-				case "write":
-					permissions_object["WRITE"] = value
-				default:
-					return fmt.Errorf("invalid permissions type of %s", key)
+			case "read":
+				permissions_object["READ"] = value
+			case "execute":
+				permissions_object["EXECUTE"] = value
+			case "write":
+				permissions_object["WRITE"] = value
+			default:
+				return fmt.Errorf("invalid permissions type of %s", key)
 			}
 		}
 		app["permissions"] = permissions_object
@@ -91,7 +93,7 @@ func CreateOrUpdateApplication(client *gate.GatewayClient, applicationName, emai
 
 	ref, _, err := client.TaskControllerApi.TaskUsingPOST1(client.Context, createAppTask)
 	if err != nil {
-		return FormatAPIErrorMessage ("TaskControllerApi.TaskUsingPOST1", err)
+		return FormatAPIErrorMessage("TaskControllerApi.TaskUsingPOST1", err)
 	}
 
 	toks := strings.Split(ref["ref"].(string), "/")
@@ -99,17 +101,22 @@ func CreateOrUpdateApplication(client *gate.GatewayClient, applicationName, emai
 
 	task, resp, err := client.TaskControllerApi.GetTaskUsingGET1(client.Context, id)
 	attempts := 0
-	for (task == nil || !taskCompleted(task)) && attempts < 5 {
+	maxAttempts := 40
+	for (task == nil || !taskCompleted(task)) && attempts < maxAttempts {
 		toks := strings.Split(ref["ref"].(string), "/")
 		id := toks[len(toks)-1]
 
 		task, resp, err = client.TaskControllerApi.GetTaskUsingGET1(client.Context, id)
 		attempts += 1
-		time.Sleep(time.Duration(attempts*attempts) * time.Second)
+		sleepDuration := time.Duration(attempts*attempts) * time.Second
+		if sleepDuration > 30*time.Second {
+			sleepDuration = 30 * time.Second
+		}
+		time.Sleep(sleepDuration)
 	}
 
 	if err != nil {
-		return FormatAPIErrorMessage ("TaskControllerApi.GetTaskUsingGET1", err)
+		return FormatAPIErrorMessage("TaskControllerApi.GetTaskUsingGET1", err)
 	}
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return fmt.Errorf("Encountered an error saving application, status code: %d\n", resp.StatusCode)
@@ -138,7 +145,7 @@ func DeleteAppliation(client *gate.GatewayClient, applicationName string) error 
 	_, resp, err := client.TaskControllerApi.TaskUsingPOST1(client.Context, deleteAppTask)
 
 	if err != nil {
-		return FormatAPIErrorMessage ("TaskControllerApi.TaskUsingPOST1", err)
+		return FormatAPIErrorMessage("TaskControllerApi.TaskUsingPOST1", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
